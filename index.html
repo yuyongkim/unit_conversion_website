@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChemUnit Converter - 화공 단위 변환 시스템</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjs@11.11.0/lib/browser/math.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧪 ChemUnit Converter</h1>
+            <p>화공 단위 변환 및 공학 계산 시스템</p>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-button active" data-tab="converter">단위 변환</button>
+            <button class="tab-button" data-tab="engineering">공학 계산기</button>
+            <button class="tab-button" data-tab="financial">재무 계산기</button>
+            <button class="tab-button" data-tab="graphing">그래프</button>
+            <button class="tab-button" data-tab="definitions">단위 정의</button>
+        </nav>
+
+        <!-- 단위 변환 탭 -->
+        <div id="converter" class="tab-content active">
+            <div class="converter-section">
+                <div class="category-selector">
+                    <label for="physical-quantity">물리량 선택:</label>
+                    <select id="physical-quantity">
+                        <option value="">물리량을 선택하세요</option>
+                        <option value="pressure">압력 (Pressure)</option>
+                        <option value="flow">유량 (Flow Rate)</option>
+                        <option value="viscosity">점도 (Viscosity)</option>
+                        <option value="velocity">속도 (Velocity)</option>
+                        <option value="density">밀도 (Density)</option>
+                        <option value="temperature">온도 (Temperature)</option>
+                        <option value="length">길이 (Length)</option>
+                        <option value="mass">질량 (Mass)</option>
+                        <option value="time">시간 (Time)</option>
+                        <option value="area">면적 (Area)</option>
+                        <option value="volume">부피 (Volume)</option>
+                        <option value="energy">에너지 (Energy)</option>
+                        <option value="power">동력 (Power)</option>
+                        <option value="force">힘 (Force)</option>
+                        <option value="turbidity">탁도 (Turbidity)</option>
+                        <option value="concentration">농도 (Concentration)</option>
+                        <option value="thermalConductivity">열전도도 (Thermal Conductivity)</option>
+                    </select>
+                </div>
+
+                <div class="conversion-area">
+                    <div class="input-section">
+                        <label for="from-unit">출발 단위:</label>
+                        <select id="from-unit" disabled>
+                            <option value="">먼저 물리량을 선택하세요</option>
+                        </select>
+                        <input type="number" id="from-value" placeholder="값을 입력하세요" disabled>
+                    </div>
+
+                    <div class="conversion-arrow">
+                        <button id="swap-units">⇄</button>
+                    </div>
+
+                    <div class="output-section">
+                        <label for="to-unit">목표 단위:</label>
+                        <select id="to-unit" disabled>
+                            <option value="">먼저 물리량을 선택하세요</option>
+                        </select>
+                        <input type="number" id="to-value" placeholder="결과" readonly>
+                    </div>
+                </div>
+
+                <div class="dimension-info">
+                    <div id="dimension-display"></div>
+                    <div id="conversion-formula"></div>
+                </div>
+
+                <div class="assumption-info">
+                    <div id="assumption-display"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 공학 계산기 탭 -->
+        <div id="engineering" class="tab-content">
+            <div class="calculator-section">
+                <div class="basic-calculator">
+                    <h3>기본 계산기</h3>
+                    <div class="calc-display">
+                        <input type="text" id="calc-display" readonly>
+                    </div>
+                    <div class="calc-buttons">
+                        <button class="calc-btn" onclick="clearCalc()">C</button>
+                        <button class="calc-btn" onclick="deleteLast()">⌫</button>
+                        <button class="calc-btn" onclick="appendToCalc('(')">(</button>
+                        <button class="calc-btn" onclick="appendToCalc(')')">)</button>
+                        <button class="calc-btn" onclick="appendToCalc('7')">7</button>
+                        <button class="calc-btn" onclick="appendToCalc('8')">8</button>
+                        <button class="calc-btn" onclick="appendToCalc('9')">9</button>
+                        <button class="calc-btn" onclick="appendToCalc('/')">/</button>
+                        <button class="calc-btn" onclick="appendToCalc('4')">4</button>
+                        <button class="calc-btn" onclick="appendToCalc('5')">5</button>
+                        <button class="calc-btn" onclick="appendToCalc('6')">6</button>
+                        <button class="calc-btn" onclick="appendToCalc('*')">×</button>
+                        <button class="calc-btn" onclick="appendToCalc('1')">1</button>
+                        <button class="calc-btn" onclick="appendToCalc('2')">2</button>
+                        <button class="calc-btn" onclick="appendToCalc('3')">3</button>
+                        <button class="calc-btn" onclick="appendToCalc('-')">-</button>
+                        <button class="calc-btn" onclick="appendToCalc('0')">0</button>
+                        <button class="calc-btn" onclick="appendToCalc('.')">.</button>
+                        <button class="calc-btn" onclick="calculateResult()">=</button>
+                        <button class="calc-btn" onclick="appendToCalc('+')">+</button>
+                    </div>
+                    <button id="send-to-converter" class="send-btn" onclick="sendToConverter()">결과를 변환기에 전송</button>
+                    
+                    <!-- 계산기 내 그래프 기능 -->
+                    <div class="calc-graph-section">
+                        <h4>함수 그래프</h4>
+                        <div class="calc-graph-controls">
+                            <input type="text" id="calc-function-expression" placeholder="f(x) = sin(x)" value="sin(x)">
+                            <div class="calc-range-inputs">
+                                <input type="number" id="calc-x-min" value="-10" step="0.1" placeholder="X 최소">
+                                <input type="number" id="calc-x-max" value="10" step="0.1" placeholder="X 최대">
+                            </div>
+                            <button onclick="plotCalcFunction()">그래프 그리기</button>
+                        </div>
+                        <div class="calc-graph-container">
+                            <canvas id="calc-function-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="engineering-calculations">
+                    <h3>화공 특화 계산</h3>
+                    
+                    <div class="calc-card">
+                        <h4>Reynolds 수</h4>
+                        <div class="calc-inputs">
+                            <input type="number" id="reynolds-density" placeholder="밀도 (kg/m³)">
+                            <input type="number" id="reynolds-velocity" placeholder="속도 (m/s)">
+                            <input type="number" id="reynolds-diameter" placeholder="직경 (m)">
+                            <input type="number" id="reynolds-viscosity" placeholder="점도 (Pa·s)">
+                        </div>
+                        <button onclick="calculateReynolds()">계산</button>
+                        <div id="reynolds-result"></div>
+                    </div>
+
+                    <div class="calc-card">
+                        <h4>압력-헤드 변환</h4>
+                        <div class="calc-inputs">
+                            <input type="number" id="pressure-diff" placeholder="압력차 (Pa)">
+                            <input type="number" id="fluid-density" placeholder="유체밀도 (kg/m³)">
+                        </div>
+                        <button onclick="calculateHead()">계산</button>
+                        <div id="head-result"></div>
+                    </div>
+
+                    <div class="calc-card">
+                        <h4>열플럭스</h4>
+                        <div class="calc-inputs">
+                            <input type="number" id="heat-transfer-coeff" placeholder="열전달계수 (W/m²·K)">
+                            <input type="number" id="temp-diff" placeholder="온도차 (K)">
+                        </div>
+                        <button onclick="calculateHeatFlux()">계산</button>
+                        <div id="heat-flux-result"></div>
+                    </div>
+
+                    <div class="calc-card">
+                        <h4>펌프 동력</h4>
+                        <div class="calc-inputs">
+                            <input type="number" id="flow-rate" placeholder="유량 (m³/s)">
+                            <input type="number" id="pressure-drop" placeholder="압력차 (Pa)">
+                            <input type="number" id="efficiency" placeholder="효율 (0-1)">
+                        </div>
+                        <button onclick="calculatePumpPower()">계산</button>
+                        <div id="pump-power-result"></div>
+                    </div>
+
+                    <div class="calc-card">
+                        <h4>Steam Pressure (증기 압력)</h4>
+                        <div class="calc-inputs">
+                            <input type="number" id="steam-density" placeholder="증기 밀도 (kg/m³)">
+                            <input type="number" id="steam-velocity" placeholder="증기 속도 (m/s)">
+                            <input type="number" id="steam-height" placeholder="높이차 (m)">
+                        </div>
+                        <button onclick="calculateSteamPressure()">계산</button>
+                        <div id="steam-pressure-result"></div>
+                    </div>
+
+                    <div class="calc-card">
+                        <h4>Mixture Properties (혼합물 성질)</h4>
+                        <div class="calc-inputs">
+                            <input type="number" id="comp1-fraction" placeholder="성분1 몰분율">
+                            <input type="number" id="comp1-density" placeholder="성분1 밀도 (kg/m³)">
+                            <input type="number" id="comp2-fraction" placeholder="성분2 몰분율">
+                            <input type="number" id="comp2-density" placeholder="성분2 밀도 (kg/m³)">
+                        </div>
+                        <button onclick="calculateMixtureDensity()">계산</button>
+                        <div id="mixture-density-result"></div>
+                    </div>
+
+                    <div class="calc-card">
+                        <h4>Heat Transfer Coefficient</h4>
+                        <div class="calc-inputs">
+                            <input type="number" id="nusselt-number" placeholder="Nusselt 수">
+                            <input type="number" id="thermal-conductivity" placeholder="열전도도 (W/m·K)">
+                            <input type="number" id="characteristic-length" placeholder="특성길이 (m)">
+                        </div>
+                        <button onclick="calculateHeatTransferCoeff()">계산</button>
+                        <div id="heat-transfer-coeff-result"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 재무 계산기 탭 -->
+        <div id="financial" class="tab-content">
+            <div class="financial-calculator">
+                <h3>재무 계산기</h3>
+                
+                <div class="calc-card">
+                    <h4>복리 계산</h4>
+                    <div class="calc-inputs">
+                        <input type="number" id="principal" placeholder="원금">
+                        <input type="number" id="interest-rate" placeholder="연이율 (%)">
+                        <input type="number" id="time-period" placeholder="기간 (년)">
+                        <input type="number" id="compounding-frequency" placeholder="복리 빈도 (년)" value="1">
+                    </div>
+                    <button onclick="calculateCompoundInterest()">계산</button>
+                    <div id="compound-result"></div>
+                    <div class="chart-container">
+                        <canvas id="compound-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="calc-card">
+                    <h4>현재가치 (PV)</h4>
+                    <div class="calc-inputs">
+                        <input type="number" id="future-value" placeholder="미래가치">
+                        <input type="number" id="discount-rate" placeholder="할인율 (%)">
+                        <input type="number" id="pv-periods" placeholder="기간 (년)">
+                    </div>
+                    <button onclick="calculatePresentValue()">계산</button>
+                    <div id="pv-result"></div>
+                    <div class="chart-container">
+                        <canvas id="pv-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="calc-card">
+                    <h4>연금 현재가치</h4>
+                    <div class="calc-inputs">
+                        <input type="number" id="annuity-payment" placeholder="연금 지급액">
+                        <input type="number" id="annuity-rate" placeholder="이율 (%)">
+                        <input type="number" id="annuity-periods" placeholder="기간 (년)">
+                    </div>
+                    <button onclick="calculateAnnuityPV()">계산</button>
+                    <div id="annuity-pv-result"></div>
+                    <div class="chart-container">
+                        <canvas id="annuity-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="calc-card">
+                    <h4>대출 상환</h4>
+                    <div class="calc-inputs">
+                        <input type="number" id="loan-amount" placeholder="대출금액">
+                        <input type="number" id="loan-rate" placeholder="연이율 (%)">
+                        <input type="number" id="loan-term" placeholder="상환기간 (년)">
+                    </div>
+                    <button onclick="calculateLoanPayment()">계산</button>
+                    <div id="loan-result"></div>
+                    <div class="chart-container">
+                        <canvas id="loan-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 연금 현재가치표 -->
+                <div class="calc-card">
+                    <h4>연금 현재가치표</h4>
+                    <div class="annuity-table-container">
+                        <table id="annuity-table" class="annuity-table">
+                            <thead>
+                                <tr>
+                                    <th>기간 (년)</th>
+                                    <th>이율 3%</th>
+                                    <th>이율 5%</th>
+                                    <th>이율 7%</th>
+                                    <th>이율 10%</th>
+                                </tr>
+                            </thead>
+                            <tbody id="annuity-table-body">
+                                <!-- 동적으로 생성됨 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 그래프 탭 -->
+        <div id="graphing" class="tab-content">
+            <div class="graphing-section">
+                <div class="graph-controls">
+                    <h3>함수 그래프</h3>
+                    <div class="function-input">
+                        <label for="function-expression">함수 입력:</label>
+                        <input type="text" id="function-expression" placeholder="sin(x)" value="sin(x)">
+                    </div>
+                    
+                    <!-- 함수 예시 버튼들 -->
+                    <div class="function-examples">
+                        <h4>함수 예시 (클릭하여 사용)</h4>
+                        <div class="example-buttons">
+                            <button class="example-btn" onclick="setFunction('sin(x)')">sin(x)</button>
+                            <button class="example-btn" onclick="setFunction('cos(x)')">cos(x)</button>
+                            <button class="example-btn" onclick="setFunction('tan(x)')">tan(x)</button>
+                            <button class="example-btn" onclick="setFunction('x^2')">x²</button>
+                            <button class="example-btn" onclick="setFunction('x^3')">x³</button>
+                            <button class="example-btn" onclick="setFunction('sqrt(x)')">√x</button>
+                            <button class="example-btn" onclick="setFunction('exp(x)')">eˣ</button>
+                            <button class="example-btn" onclick="setFunction('log(x)')">log(x)</button>
+                            <button class="example-btn" onclick="setFunction('ln(x)')">ln(x)</button>
+                            <button class="example-btn" onclick="setFunction('abs(x)')">|x|</button>
+                            <button class="example-btn" onclick="setFunction('sin(x)*cos(x)')">sin(x)cos(x)</button>
+                            <button class="example-btn" onclick="setFunction('x*sin(x)')">x·sin(x)</button>
+                            <button class="example-btn" onclick="setFunction('x^2 + 2*x + 1')">x²+2x+1</button>
+                            <button class="example-btn" onclick="setFunction('1/x')">1/x</button>
+                            <button class="example-btn" onclick="setFunction('sin(x)/x')">sin(x)/x</button>
+                            <button class="example-btn" onclick="setFunction('exp(-x^2)')">e^(-x²)</button>
+                        </div>
+                    </div>
+                    <div class="range-inputs">
+                        <div>
+                            <label for="x-min">X 최소값:</label>
+                            <input type="number" id="x-min" value="-10" step="0.1">
+                        </div>
+                        <div>
+                            <label for="x-max">X 최대값:</label>
+                            <input type="number" id="x-max" value="10" step="0.1">
+                        </div>
+                        <div>
+                            <label for="y-min">Y 최소값:</label>
+                            <input type="number" id="y-min" value="-5" step="0.1">
+                        </div>
+                        <div>
+                            <label for="y-max">Y 최대값:</label>
+                            <input type="number" id="y-max" value="5" step="0.1">
+                        </div>
+                    </div>
+                    <button onclick="plotFunction()">그래프 그리기</button>
+                    <button onclick="clearGraph()">그래프 지우기</button>
+                </div>
+                <div class="graph-container">
+                    <canvas id="function-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 단위 정의 탭 -->
+        <div id="definitions" class="tab-content">
+            <div class="definitions-section">
+                <h3>단위 정의 및 설명</h3>
+                <div class="search-box">
+                    <input type="text" id="unit-search" placeholder="단위를 검색하세요...">
+                </div>
+                <div id="unit-definitions"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="units-data.js"></script>
+    <script src="ucum-parser.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
